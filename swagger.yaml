@@ -37,20 +37,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserGetResponse'
+                $ref: "#/components/schemas/UserGetResponse"
         400:
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
         500:
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  '/user/{user_id}':
+                $ref: "#/components/schemas/ErrorResponse"
+  "/user/{user_id}":
     put:
       tags:
         - user
@@ -61,13 +61,13 @@ paths:
       security:
         - ApiToken: []
       parameters:
-        - $ref: '#/components/parameters/UserID'
+        - $ref: "#/components/parameters/UserID"
       requestBody:
         description: Request Body
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdateRequest'
+              $ref: "#/components/schemas/UserUpdateRequest"
         required: true
       responses:
         200:
@@ -78,13 +78,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
         500:
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /users:
     get:
       tags:
@@ -98,20 +98,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserAllGetResponse'
+                $ref: "#/components/schemas/UserAllGetResponse"
         400:
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
         500:
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  '/users/new':
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/new":
     get:
       tags:
         - user
@@ -124,19 +124,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserAllGetResponse'
+                $ref: "#/components/schemas/UserAllGetResponse"
         400:
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
         500:
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /skills:
     post:
       tags:
@@ -150,13 +150,13 @@ paths:
         中間テーブルでスキルとカテゴリを関連付ける。<br>
         取引情報も登録する。
       security:
-        - ApiToken: []    
+        - ApiToken: []
       requestBody:
         description: Request Body
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkillRequest'
+              $ref: "#/components/schemas/SkillRequest"
         required: true
       responses:
         200:
@@ -167,13 +167,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
         500:
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - skill
@@ -187,7 +187,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkillRequest'
+              $ref: "#/components/schemas/SkillRequest"
         required: true
       responses:
         200:
@@ -195,20 +195,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkillResponse'
+                $ref: "#/components/schemas/SkillResponse"
         400:
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
         500:
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              
+                $ref: "#/components/schemas/ErrorResponse"
+
   /skills/new:
     get:
       tags:
@@ -222,19 +222,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkillListResponse'
+                $ref: "#/components/schemas/SkillListResponse"
         400:
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
         500:
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'  
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     UserGetResponse:
@@ -252,7 +252,7 @@ components:
           type: string
           description: アップロードする画像
           example: feja4e4w3njn35k3nk3h3kjn3fku4
-        introduction: 
+        introduction:
           type: string
           description: 自己紹介文
           example: はじめまして
@@ -267,7 +267,7 @@ components:
         other_email:
           type: string
           description: サブメールアドレス
-          example: tanaka@ezweb.ne.jp        
+          example: tanaka@ezweb.ne.jp
         qr_code:
           type: string
           description: qrコード
@@ -286,7 +286,7 @@ components:
         users:
           type: array
           items:
-            $ref: '#/components/schemas/UserGetResponse'
+            $ref: "#/components/schemas/UserGetResponse"
     UserUpdateRequest:
       type: object
       properties:
@@ -302,7 +302,7 @@ components:
           type: string
           description: アップロードする画像
           example: feja4e4w3njn35k3nk3h3kjn3fku4
-        introduction: 
+        introduction:
           type: string
           description: 自己紹介文
           example: はじめまして
@@ -317,14 +317,14 @@ components:
         other_email:
           type: string
           description: サブメールアドレス
-          example: tanaka@ezweb.ne.jp        
+          example: tanaka@ezweb.ne.jp
         qr_code:
           type: string
           description: qrコード
           example: w3njn35k3nk3h3kjn3fku4cewr
     SkillRequest:
-       type: object
-       properties:
+      type: object
+      properties:
         id:
           type: integer
           description: id
@@ -341,7 +341,7 @@ components:
           type: string
           description: スキル概要
           example: 課題なら教えられます。
-        price: 
+        price:
           type: integer
           description: 料金
           example: 2000
@@ -359,43 +359,43 @@ components:
         skills:
           type: array
           items:
-            $ref: '#/components/schemas/SkillResponse'
+            $ref: "#/components/schemas/SkillResponse"
     SkillResponse:
-        type: object
-        properties: 
-         id:
+      type: object
+      properties:
+        id:
           type: integer
           description: id
           example: 1
-         name:
+        name:
           type: string
           description: スキル名
           example: c言語
-         thumbnail:
+        thumbnail:
           type: string
           description: 画像
           example: ljkfalkjflkjaflsekjfldjlkj
-         description:
+        description:
           type: string
           description: スキル概要
           example: 課題なら教えられます。
-         price: 
+        price:
           type: integer
           description: 料金
           example: 2000
-         category:
+        category:
           type: string
           description: カテゴリ
           example: プログラミング
-         tag:
+        tag:
           type: string
           description: タグ
           example: c
-         created_at:
+        created_at:
           type: string
           description: 作成した時間
           example: 2020-05-10/04:45:50
-         updated_at:
+        updated_at:
           type: string
           description: 更新した時間
           example: 2020-05-10/04:45:50
