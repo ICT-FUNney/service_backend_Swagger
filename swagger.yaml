@@ -111,32 +111,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-  "/users/new":
-    get:
-      tags:
-        - user
-      summary: ユーザ情報一覧取得API(10個ずつ)
-      description: |-
-        ユーザの詳細情報を取得
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserAllGetResponse"
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+
   /skills:
     post:
       tags:
