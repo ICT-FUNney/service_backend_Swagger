@@ -209,32 +209,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /skills/new:
-    get:
-      tags:
-        - skill
-      summary: スキル情報一覧取得API（10個ずつ）
-      description: |-
-        新規投稿順でスキルの取得を10個ずつ行う。limitで取得件数を指定（デフォルトは10）し、offsetで何件目から取得するかを指定（デフォルト値は0）する。各スキルのスキルid・スキル名・サムネイル・説明文・価格・作成時間・更新時間を取得して返却する。
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SkillListResponse"
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     UserGetResponse:
