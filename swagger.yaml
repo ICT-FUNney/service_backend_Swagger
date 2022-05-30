@@ -21,7 +21,7 @@ paths:
     get:
       tags:
         - user
-      summary: ユーザ情報取得API
+      summary: 変更予定
       description: |-
         ユーザの詳細情報を取得
       security:
@@ -50,11 +50,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  '/user/{user_id}':
+  /user/{user_id}:
     put:
       tags:
         - user
-      summary: ユーザ情報更新API
+      summary: 変更予定
       description: |-
         ユーザ情報の更新をします。
         初期実装では名前の更新を行います。
@@ -89,7 +89,7 @@ paths:
     get:
       tags:
         - user
-      summary: ユーザ情報一覧取得API
+      summary: 変更予定
       description: |-
         ユーザの詳細情報を取得
       responses:
@@ -115,7 +115,7 @@ paths:
     get:
       tags:
         - user
-      summary: ユーザ情報一覧取得API(10個ずつ)
+      summary: 変更予定
       description: |-
         ユーザの詳細情報を取得
       responses:
@@ -137,18 +137,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /skills:
+  /skill:
     post:
       tags:
         - skill
       summary: スキル投稿API
       description: |-
-        スキル名・サムネイル・説明文・価格・カテゴリ・タグをパラメーターにして、スキルのid・スキル名・サムネイル・説明文・価格・カテゴリ・タグ・作成時間・更新時間を返却する。
-        <br><br>
-        タグは同じタグ名がなければ登録して、あれば登録しない。<br>
-        中間テーブルでスキルとタグを関連付ける。<br>
-        中間テーブルでスキルとカテゴリを関連付ける。<br>
-        取引情報も登録する。
+        スキル名・サムネイル・説明文・価格・カテゴリidをパラメーターにして、正常に動作できたかを返す。  
       security:
         - ApiToken: []    
       requestBody:
@@ -156,7 +151,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkillRequest'
+              $ref: '#/components/schemas/SkillPostRequest'
         required: true
       responses:
         200:
@@ -187,7 +182,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkillRequest'
+              $ref: '#/components/schemas/SkillPostRequest'
         required: true
       responses:
         200:
@@ -209,13 +204,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               
-  /skills/new:
     get:
       tags:
         - skill
-      summary: スキル情報一覧取得API（10個ずつ）
+      summary: スキル情報一覧取得API（15個ずつ)
       description: |-
-        新規投稿順でスキルの取得を10個ずつ行う。limitで取得件数を指定（デフォルトは10）し、offsetで何件目から取得するかを指定（デフォルト値は0）する。各スキルのスキルid・スキル名・サムネイル・説明文・価格・作成時間・更新時間を取得して返却する。
+        新規投稿順でカテゴリごとにスキルの取得を5個ずつ行い一度につき計15個づつ返す。limitで取得件数を指定（デフォルトは5）し、offsetで何件目から取得するかを指定（デフォルト値は0）する。各スキルのスキルid・スキル名・サムネイル・価格・カテゴリid・作成時間・更新時間を取得して返却する。
       responses:
         200:
           description: OK
@@ -235,6 +229,119 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'  
+
+  '/skill/{skill_id}':
+    get:
+      tags:
+        - skill
+      summary: スキル詳細情報取得API[p未]
+      description: |- 
+       送られてきたスキルidを参照して、スキルid・スキル名・サムネイル・価格・カテゴリid・説明文・出品者の名前取得する。また、スキルが買われていないor自分のスキルが買われたかor自分がスキル買ったかの購入状況の情報を作成し返却する。購入状況の情報は買われていない場合、２。自分のスキルが買われた場合、１。自分がスキルを買ったとき0を返す。
+       
+      parameters:
+      - name: "skill_id"
+        in: "path"
+        required: true
+        description: "取得したいスキルのid"
+        content:
+         application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillDetailResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse' 
+
+  '/skill/sell/{token}':
+    get:
+      tags:
+        - skill
+      summary: 販売したスキル情報取得API(5個ずつ)[p未]
+      description: |- 
+       送られてきたアクセストークンを検証したのちにそのトークンを持つユーザーを参照してスキル情報を返す。limitで取得件数を指定（デフォルトは5）し、offsetで何件目から取得するかを指定（デフォルト値は0）する。各スキル情報はスキルid・スキル名・サムネイル・説明文の情報を取得して返却する
+      parameters:
+      - name: "token"
+        in: "path"
+        required: true
+        description: "取得したいユーザーのtoken"
+        content:
+         application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillBSListResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse' 
+
+  '/skill/buy/{token}':
+    get:
+      tags:
+        - skill
+      summary: 購入したスキル情報取得API(5個ずつ)[p未]
+      description: |- 
+       送られてきたアクセストークンを検証したのちにそのトークンを持つユーザーを参照してスキル情報を返す。limitで取得件数を指定（デフォルトは5）し、offsetで何件目から取得するかを指定（デフォルト値は0）する。各スキル情報はスキルid・スキル名・サムネイル・説明文の情報を取得して返却する
+      parameters:
+      - name: "token"
+        in: "path"
+        required: true
+        description: "取得したいユーザーのtoken"
+        content:
+         application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillBSListResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse' 
+
+
+
 components:
   schemas:
     UserGetResponse:
@@ -322,13 +429,9 @@ components:
           type: string
           description: qrコード
           example: w3njn35k3nk3h3kjn3fku4cewr
-    SkillRequest:
+    SkillPostRequest:
        type: object
        properties:
-        id:
-          type: integer
-          description: id
-          example: 1
         name:
           type: string
           description: スキル名
@@ -345,14 +448,10 @@ components:
           type: integer
           description: 料金
           example: 2000
-        category:
-          type: string
-          description: カテゴリ
-          example: プログラミング
-        tag:
-          type: string
-          description: タグ
-          example: c
+        categories_uuid:
+          type: integer
+          description: カテゴリのid
+          example: 1
     SkillListResponse:
       type: object
       properties:
@@ -363,10 +462,10 @@ components:
     SkillResponse:
         type: object
         properties: 
-         id:
-          type: integer
-          description: id
-          example: 1
+         uuid:
+          type: string
+          description: uuid
+          example: xyiuysd
          name:
           type: string
           description: スキル名
@@ -375,22 +474,14 @@ components:
           type: string
           description: 画像
           example: ljkfalkjflkjaflsekjfldjlkj
-         description:
-          type: string
-          description: スキル概要
-          example: 課題なら教えられます。
          price: 
           type: integer
           description: 料金
           example: 2000
-         category:
-          type: string
-          description: カテゴリ
-          example: プログラミング
-         tag:
-          type: string
-          description: タグ
-          example: c
+         categories_uuid:
+          type: integer
+          description: カテゴリのid
+          example: 1
          created_at:
           type: string
           description: 作成した時間
@@ -399,6 +490,646 @@ components:
           type: string
           description: 更新した時間
           example: 2020-05-10/04:45:50
+    SkillDetailResponse:
+        type: object
+        properties: 
+         skills_uuid:
+          type: string
+          description: uuid
+          example: xyiuysd
+         name:
+          type: string
+          description: スキル名
+          example: c言語
+         thumbnail:
+          type: string
+          description: 画像
+          example: ljkfalkjflkjaflsekjfldjlkj
+         price: 
+          type: integer
+          description: 料金
+          example: 2000
+         categories_uuid:
+          type: integer
+          description: カテゴリのid
+          example: 1
+         description:
+          type: string
+          description: スキル概要
+          example: 課題なら教えられます。
+         created_at:
+          type: string
+          description: 作成した時間
+          example: 2020-05-10/04:45:50
+         updated_at:
+          type: string
+          description: 更新した時間
+          example: 2020-05-10/04:45:50
+    SkillBSResponse:
+        type: object
+        properties: 
+         uuid:
+          type: string
+          description: skills_uuid
+          example: xyiuysd
+         name:
+          type: string
+          description: スキル名
+          example: c言語
+         thumbnail:
+          type: string
+          description: 画像
+          example: ljkfalkjflkjaflsekjfldjlkj
+         categories_uuid:
+          type: integer
+          description: カテゴリのid
+          example: 1
+         created_at:
+          type: string
+          description: 作成した時間
+          example: 2020-05-10/04:45:50
+         updated_at:
+          type: string
+          description: 更新した時間
+          example: 2020-05-10/04:45:50
+    SkillBSListResponse:
+      type: object
+      properties:
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillBSResponse'
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: ステータスコード
+        message:
+          type: string
+          description: エラーメッセージ
+      required:
+        - code
+        - messaopenapi: 3.0.2
+info:
+  title: ふぁすま API
+  description: |-
+    <b>Fintech サーバサイド API仕様</b>
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/
+tags:
+  - name: user
+    description: ユーザ関連API
+  - name: skill
+    description: スキル関連API
+  - name: search
+    description: 検索関連API
+  - name: notice
+    description: お知らせ関連API
+
+paths:
+  /user:
+    get:
+      tags:
+        - user
+      summary: 変更予定
+      description: |-
+        ユーザの詳細情報を取得
+      security:
+        - ApiToken: []
+      parameters:
+        - in: query
+          name: studentID
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGetResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /user/{user_id}:
+    put:
+      tags:
+        - user
+      summary: 変更予定
+      description: |-
+        ユーザ情報の更新をします。
+        初期実装では名前の更新を行います。
+      security:
+        - ApiToken: []
+      parameters:
+        - $ref: '#/components/parameters/UserID'
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /users:
+    get:
+      tags:
+        - user
+      summary: 変更予定
+      description: |-
+        ユーザの詳細情報を取得
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAllGetResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/users/new':
+    get:
+      tags:
+        - user
+      summary: 変更予定
+      description: |-
+        ユーザの詳細情報を取得
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAllGetResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /skill:
+    post:
+      tags:
+        - skill
+      summary: スキル投稿API
+      description: |-
+        スキル名・サムネイル・説明文・価格・カテゴリidをパラメーターにして、正常に動作できたかを返す。  
+      security:
+        - ApiToken: []    
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillPostRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - skill
+      summary: スキル情報更新API
+      description: |-
+        ユーザが出品したスキルである場合のみ、スキルidをパラメーターにしてスキルを編集して、スキルid・スキル名・サムネイル・説明文・価格・カテゴリ・タグ・作成時間・更新時間を返却する。
+      security:
+        - ApiToken: []
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillPostRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              
+    get:
+      tags:
+        - skill
+      summary: スキル情報一覧取得API（15個ずつ)
+      description: |-
+        新規投稿順でカテゴリごとにスキルの取得を5個ずつ行い一度につき計15個づつ返す。limitで取得件数を指定（デフォルトは5）し、offsetで何件目から取得するかを指定（デフォルト値は0）する。各スキルのスキルid・スキル名・サムネイル・価格・カテゴリid・作成時間・更新時間を取得して返却する。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillListResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'  
+
+  '/skill/{skill_id}':
+    get:
+      tags:
+        - skill
+      summary: スキル詳細情報取得API
+      description: |- 
+       送られてきたスキルidを参照して、スキルid・スキル名・サムネイル・価格・カテゴリid・説明文・出品者の名前取得する。また、スキルが買われていないor自分のスキルが買われたかor自分がスキル買ったかの購入状況の情報を作成し返却する。購入状況の情報は買われていない場合、２。自分のスキルが買われた場合、１。自分がスキルを買ったとき0を返す。
+       
+      parameters:
+      - name: "skill_id"
+        in: "path"
+        required: true
+        description: "取得したいスキルのid"
+        content:
+         application/json:
+              schema: {}
+      
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillDetailResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse' 
+
+  '/skill/sell/{token}':
+    get:
+      tags:
+        - skill
+      summary: 販売したスキル情報取得API(5個ずつ)
+      description: |- 
+       送られてきたアクセストークンを検証したのちにそのトークンを持つユーザーを参照してスキル情報を返す。limitで取得件数を指定（デフォルトは5）し、offsetで何件目から取得するかを指定（デフォルト値は0）する。各スキル情報はスキルid・スキル名・サムネイル・説明文の情報を取得して返却する
+      parameters:
+      - name: "token"
+        in: "path"
+        required: true
+        description: "取得したいユーザーのtoken"
+        content:
+         application/json:
+              schema: {}
+              
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillBSListResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse' 
+
+  '/skill/buy/{token}':
+    get:
+      tags:
+        - skill
+      summary: 購入したスキル情報取得API(5個ずつ)
+      description: |- 
+       送られてきたアクセストークンを検証したのちにそのトークンを持つユーザーを参照してスキル情報を返す。limitで取得件数を指定（デフォルトは5）し、offsetで何件目から取得するかを指定（デフォルト値は0）する。各スキル情報はスキルid・スキル名・サムネイル・説明文の情報を取得して返却する
+      parameters:
+      - name: "token"
+        in: "path"
+        required: true
+        description: "取得したいユーザーのtoken"
+        content:
+         application/json:
+              schema: {}
+                
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillBSListResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse' 
+
+
+
+components:
+  schemas:
+    UserGetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: id
+          example: 1
+        name:
+          type: string
+          description: 名前
+          example: Tanaka
+        avatar:
+          type: string
+          description: アップロードする画像
+          example: feja4e4w3njn35k3nk3h3kjn3fku4
+        introduction: 
+          type: string
+          description: 自己紹介文
+          example: はじめまして
+        google_emial:
+          type: string
+          description: メールアドレス
+          example: tanaka@gmail.com
+        school_email:
+          type: string
+          description: 大学メールアドレス
+          example: tanaka@fun.ac.jp
+        other_email:
+          type: string
+          description: サブメールアドレス
+          example: tanaka@ezweb.ne.jp        
+        qr_code:
+          type: string
+          description: qrコード
+          example: w3njn35k3nk3h3kjn3fku4cewr
+        created_at:
+          type: string
+          description: 作成した時間
+          example: 2020-05-10/04:45:50
+        updated_at:
+          type: string
+          description: 更新した時間
+          example: 2020-05-10/04:45:50
+    UserAllGetResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserGetResponse'
+    UserUpdateRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: id
+          example: 1
+        name:
+          type: string
+          description: ユーザー名
+          example: Tanaka
+        avatar:
+          type: string
+          description: アップロードする画像
+          example: feja4e4w3njn35k3nk3h3kjn3fku4
+        introduction: 
+          type: string
+          description: 自己紹介文
+          example: はじめまして
+        google_emial:
+          type: string
+          description: メールアドレス
+          example: tanaka@gmail.com
+        school_email:
+          type: string
+          description: 大学メールアドレス
+          example: tanaka@fun.ac.jp
+        other_email:
+          type: string
+          description: サブメールアドレス
+          example: tanaka@ezweb.ne.jp        
+        qr_code:
+          type: string
+          description: qrコード
+          example: w3njn35k3nk3h3kjn3fku4cewr
+    SkillPostRequest:
+       type: object
+       properties:
+        name:
+          type: string
+          description: スキル名
+          example: c言語
+        thumbnail:
+          type: string
+          description: 画像
+          example: ljkfalkjflkjaflsekjfldjlkj
+        description:
+          type: string
+          description: スキル概要
+          example: 課題なら教えられます。
+        price: 
+          type: integer
+          description: 料金
+          example: 2000
+        categories_uuid:
+          type: integer
+          description: カテゴリのid
+          example: 1
+    SkillListResponse:
+      type: object
+      properties:
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillResponse'
+    SkillResponse:
+        type: object
+        properties: 
+         uuid:
+          type: string
+          description: uuid
+          example: xyiuysd
+         name:
+          type: string
+          description: スキル名
+          example: c言語
+         thumbnail:
+          type: string
+          description: 画像
+          example: ljkfalkjflkjaflsekjfldjlkj
+         price: 
+          type: integer
+          description: 料金
+          example: 2000
+         categories_uuid:
+          type: integer
+          description: カテゴリのid
+          example: 1
+         created_at:
+          type: string
+          description: 作成した時間
+          example: 2020-05-10/04:45:50
+         updated_at:
+          type: string
+          description: 更新した時間
+          example: 2020-05-10/04:45:50
+    SkillDetailResponse:
+        type: object
+        properties: 
+         skills_uuid:
+          type: string
+          description: uuid
+          example: xyiuysd
+         name:
+          type: string
+          description: スキル名
+          example: c言語
+         thumbnail:
+          type: string
+          description: 画像
+          example: ljkfalkjflkjaflsekjfldjlkj
+         price: 
+          type: integer
+          description: 料金
+          example: 2000
+         categories_uuid:
+          type: integer
+          description: カテゴリのid
+          example: 1
+         description:
+          type: string
+          description: スキル概要
+          example: 課題なら教えられます。
+         created_at:
+          type: string
+          description: 作成した時間
+          example: 2020-05-10/04:45:50
+         updated_at:
+          type: string
+          description: 更新した時間
+          example: 2020-05-10/04:45:50
+    SkillBSResponse:
+        type: object
+        properties: 
+         uuid:
+          type: string
+          description: skills_uuid
+          example: xyiuysd
+         name:
+          type: string
+          description: スキル名
+          example: c言語
+         thumbnail:
+          type: string
+          description: 画像
+          example: ljkfalkjflkjaflsekjfldjlkj
+         categories_uuid:
+          type: integer
+          description: カテゴリのid
+          example: 1
+         created_at:
+          type: string
+          description: 作成した時間
+          example: 2020-05-10/04:45:50
+         updated_at:
+          type: string
+          description: 更新した時間
+          example: 2020-05-10/04:45:50
+    SkillBSListResponse:
+      type: object
+      properties:
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillBSResponse'
     ErrorResponse:
       type: object
       properties:
@@ -411,6 +1142,19 @@ components:
       required:
         - code
         - message
+  parameters:
+    UserID:
+      name: user_id
+      in: path
+      required: true
+      description: userID
+      schema:
+        type: integer
+  securitySchemes:
+    ApiToken:
+      type: apiKey
+      in: header
+      name: X-API-TOKENge
   parameters:
     UserID:
       name: user_id
