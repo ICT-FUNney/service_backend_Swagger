@@ -197,40 +197,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-    get:
-      tags:
-        - skill
-      summary: スキル情報一覧取得API（15個ずつ)
-      description: >-
-        新規投稿順でカテゴリごとにスキルの取得を5個ずつ行い一度につき計15個づつ返す。limitで取得件数を指定（デフォルトは5）し、offsetで何件目から取得するかを指定（デフォルト値は0）する。各スキルのスキルid・スキル名・サムネイル・価格・カテゴリid・作成時間・更新時間を取得して返却する。
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SkillListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /skill/{skill_id}:
+    
+  /skill/{category_id}:
     get:
       tags:
         - skill
       summary: スキル詳細情報取得API
       description: >-
-        送られてきたスキルidを参照して、スキルid・スキル名・サムネイル・価格・カテゴリid・説明文・出品者の名前取得する。また、スキルが買われていないor自分のスキルが買われたかor自分がスキル買ったかの購入状況の情報を作成し返却する。購入状況の情報は買われていない場合、２。自分のスキルが買われた場合、１。自分がスキルを買ったとき0を返す。
+        送られてきたスキルidを参照して、スキルid・スキル名・サムネイル・価格・カテゴリid・説明文・ステータス・出品者の名前・出品者のアドレス。あれば、購入者の名前(空文字許容)・購入者のアドレス(空文字許容)・購入成立日時(ないときは-1)を取得する。また、スキルが買われていないor自分のスキルが買われたかor自分がスキル買ったかの購入状況の情報を作成し返却する。購入状況の情報は買われていない場合、２。自分のスキルが買われた場合、１。自分がスキルを買ったとき0を返す。
       parameters:
-        - name: skill_id
+        - name: category_id
           in: path
           required: true
           description: 取得したいスキルのid
@@ -256,43 +232,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  '/skill/more/{category_id}':
-    get:
-      tags:
-        - skill
-      summary: スキル詳細情報取得API
-      description: |- 
-       カテゴリごとに15件ずつ(数学15件とか)スキルid，価格，カテゴリ，サムネイル，スキル名，説明文を返却する。
 
-       
-      parameters:
-      - name: "category_id"
-        in: "path"
-        required: true
-        description: "取得したいカテゴリのid"
-        content:
-         application/json:
-              schema: {}
-      
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SkillMoreListResponse'
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /skill/sell/{token}:
     get:
       tags:
@@ -366,10 +306,10 @@ components:
     UserGetResponse:
       type: object
       properties:
-        id:
-          type: integer
-          description: id
-          example: 1
+        uuid:
+          type: string
+          description: id 
+          example: asddfg
         name:
           type: string
           description: 名前
@@ -467,59 +407,14 @@ components:
           type: integer
           description: 料金
           example: 2000
-        categories_uuid:
+        categories_id:
           type: integer
           description: カテゴリのid
           example: 1
-    SkillMoreListResponse:
-      type: object
-      properties:
-        skills:
-          type: array
-          items:
-            $ref: '#/components/schemas/SkillMoreResponse'
-    SkillMoreResponse:
-      type: object
-      properties:
-        uuid:
-          type: string
-          description: スキルのuuid
-          example: xyiuysd
-        name:
-          type: string
-          description: スキル名
-          example: c言語
-        thumbnail:
-          type: string
-          description: 画像
-          example: ljkfalkjflkjaflsekjfldjlkj
-        price:
-          type: integer
-          description: 料金
-          example: 2000
-        categories_uuid:
-          type: integer
-          description: カテゴリのuuid
-          example: 1
-        created_at:
-          type: string
-          description: 作成した時間
-          example: 2020-05-10/04:45:50
-        updated_at:
-          type: string
-          description: 更新した時間
-          example: 2020-05-10/04:45:50
-    SkillListResponse:
-      type: object
-      properties:
-        skills:
-          type: array
-          items:
-            $ref: '#/components/schemas/SkillResponse'
     SkillResponse:
       type: object
       properties:
-        uuid:
+        id:
           type: string
           description: uuid
           example: xyiuysd
@@ -535,7 +430,7 @@ components:
           type: integer
           description: 料金
           example: 2000
-        categories_uuid:
+        categories_id:
           type: integer
           description: カテゴリのid
           example: 1
@@ -550,7 +445,7 @@ components:
     SkillDetailResponse:
       type: object
       properties:
-        skills_uuid:
+        id:
           type: string
           description: uuid
           example: xyiuysd
@@ -566,21 +461,37 @@ components:
           type: integer
           description: 料金
           example: 2000
-        categories_uuid:
-          type: integer
-          description: カテゴリのid
-          example: 1
+        categories_name:
+          type: string
+          description: カテゴリの名前
+          example: プログラミング
         description:
           type: string
           description: スキル概要
           example: 課題なら教えられます。
-        created_at:
+        status:
+          type: number
+          description: スキルが購入されていない、アクセスしたユーザが購入側か販売側かを判断する数字
+          example: 1
+        seller_name: 
           type: string
-          description: 作成した時間
-          example: 2020-05-10/04:45:50
-        updated_at:
+          description: 販売者の名前
+          example: Aさん
+        seller_school_mail:
           type: string
-          description: 更新した時間
+          description: 販売者が登録しているメールアドレス
+          example: bxxxxyyy@gmail.com
+        buyer_name:
+          type: string
+          description: 購入者の名前
+          example: Bさん
+        buyer_school_mail:
+          type: string
+          description: 購入者が登録しているメールアドレス
+          example: gxxxxyyy@gmail.com
+        transaction_update_at:
+          type: string
+          description: トランザクションが最後に更新された日時
           example: 2020-05-10/04:45:50
     SkillBSResponse:
       type: object
@@ -597,7 +508,7 @@ components:
           type: string
           description: 画像
           example: ljkfalkjflkjaflsekjfldjlkj
-        categories_uuid:
+        categories_id:
           type: integer
           description: カテゴリのid
           example: 1
